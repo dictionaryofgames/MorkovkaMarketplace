@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load vendors_tags %}
+
+{% block title %}Обновить статус — Заказ #{{ order.id }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="mb-4">Статус заказа #{{ order.id }}</h2>
+
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <p><strong>Товар:</strong> {{ order_item.product.name }}</p>
+                <p><strong>Количество:</strong> {{ order_item.quantity }}</p>
+                <p><strong>Текущий статус:</strong>
+                    <span class="badge bg-{{ order_item.order.status|status_class }}">
+                        {{ order_item.order.get_status_display }}
+                    </span>
+                </p>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">Новый статус заказа</label>
+                <select name="status" class="form-select form-select-lg">
+                    {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-lg w-100">Обновить статус</button>
+            <a href="{% url 'vendors:order_list' %}" class="btn btn-secondary w-100 mt-2">Отмена</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

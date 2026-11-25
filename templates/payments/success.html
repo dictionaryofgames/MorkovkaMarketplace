@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Оплата успешна — Маркетплейс{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <i class="bi bi-check-circle text-success" style="font-size:5rem;"></i>
+    <h2 class="mt-3">Оплата прошла успешно!</h2>
+    <p class="text-muted">Спасибо за покупку. Ваш заказ обрабатывается.</p>
+    <a href="{% url 'orders:order_list' %}" class="btn btn-primary mt-3">Мои заказы</a>
+</div>
+{% endblock %}

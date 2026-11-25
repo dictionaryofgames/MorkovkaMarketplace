@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Корзина — Маркетплейс{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-cart"></i> Корзина</h2>
+
+{% if cart_items %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                {% for item in cart_items %}
+                <div class="d-flex align-items-center p-3 border-bottom">
+                    {% if item.product.image %}
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}"
+                         class="rounded me-3" style="width:80px;height:80px;object-fit:cover;">
+                    {% else %}
+                    <div class="bg-secondary rounded me-3 d-flex align-items-center justify-content-center"
+                         style="width:80px;height:80px;color:white;">
+                        <i class="bi bi-image"></i>
+                    </div>
+                    {% endif %}
+
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0"><a href="{{ item.product.get_absolute_url }}" class="text-decoration-none">{{ item.product.name }}</a></h6>
+                        <small class="text-muted">{{ item.product.vendor.name }}</small>
+                        <p class="text-primary fw-bold mb-0">{{ item.product.price }} ₽</p>
+                    </div>
+
+                    <form method="post" action="{% url 'cart:update' item_id=item.pk %}" class="d-flex align-items-center me-3">
+                        {% csrf_token %}
+                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1"
+                               class="form-control form-control-sm" style="width:60px;"
+                               onchange="this.form.submit()">
+                    </form>
+
+                    <p class="fw-bold me-3" style="min-width:80px;">{{ item.total }} ₽</p>
+
+                    <form method="post" action="{% url 'cart:remove' item_id=item.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5>Итого</h5>
+                <hr>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Товары ({{ cart.total_items }}):</span>
+                    <span class="fw-bold">{{ cart.total }} ₽</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span>Доставка:</span>
+                    <span class="text-success">Бесплатно</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between mb-4">
+                    <strong>Итого:</strong>
+                    <strong class="fs-4 text-primary">{{ cart.total }} ₽</strong>
+                </div>
+                <a href="{% url 'orders:checkout' %}" class="btn btn-primary w-100 btn-lg">
+                    <i class="bi bi-check-circle"></i> Оформить заказ
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">
+    <i class="bi bi-info-circle"></i> Ваша корзина пуста.
+    <a href="{% url 'store:home' %}" class="alert-link">Перейти к покупкам</a>
+</div>
+{% endif %}
+{% endblock %}

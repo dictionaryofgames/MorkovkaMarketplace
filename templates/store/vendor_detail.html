@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ vendor.name }} — Маркетплейс{% endblock %}
+
+{% block content %}
+<!-- Vendor Info -->
+<div class="card shadow mb-4">
+    <div class="card-body p-4">
+        <div class="d-flex align-items-center">
+            {% if vendor.logo %}
+            <img src="{{ vendor.logo.url }}" alt="{{ vendor.name }}" class="rounded me-3" style="width:80px;height:80px;object-fit:cover;">
+            {% else %}
+            <div class="rounded bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width:80px;height:80px;font-size:2rem;">
+                {{ vendor.name|first|upper }}
+            </div>
+            {% endif %}
+            <div>
+                <h2 class="mb-1">{{ vendor.name }}</h2>
+                <p class="text-muted mb-1">
+                    <i class="bi bi-star-fill text-warning"></i>
+                    Рейтинг: {{ vendor.rating }} / 5.0
+                </p>
+                <p class="text-muted">{{ vendor.description|default:'Описание отсутствует' }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Vendor Products -->
+<h3 class="mb-4">Товары магазина</h3>
+
+{% if products %}
+<div class="row g-4">
+    {% for product in products %}
+    <div class="col-6 col-md-3">
+        <div class="card product-card h-100 shadow-sm">
+            {% if product.image %}
+            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}"
+                 style="height:180px;object-fit:cover;">
+            {% else %}
+            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center"
+                 style="height:180px;color:white;font-size:3rem;">
+                <i class="bi bi-image"></i>
+            </div>
+            {% endif %}
+            <div class="card-body">
+                <h6 class="card-title text-truncate">{{ product.name }}</h6>
+                <p class="fw-bold text-primary fs-5">{{ product.price }} ₽</p>
+                {% if product.is_in_stock %}
+                <span class="badge bg-success">В наличии</span>
+                {% else %}
+                <span class="badge bg-danger">Нет в наличии</span>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-white border-top-0">
+                <a href="{{ product.get_absolute_url }}" class="btn btn-outline-primary btn-sm w-100">Подробнее</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">В магазине пока нет товаров.</div>
+{% endif %}
+{% endblock %}

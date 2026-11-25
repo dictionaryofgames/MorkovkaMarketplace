@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load vendors_tags %}
+
+{% block title %}Заказы — Кабинет продавца{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-receipt"></i> Заказы</h2>
+
+{% if order_items %}
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Заказ</th>
+                    <th>Товар</th>
+                    <th>Кол-во</th>
+                    <th>Сумма</th>
+                    <th>Статус заказа</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order_items %}
+                <tr>
+                    <td>
+                        <a href="{% url 'orders:order_detail' pk=item.order.pk %}" class="text-decoration-none">
+                            #{{ item.order.id }}
+                        </a>
+                        <br><small class="text-muted">{{ item.order.created_at|date:"d.m.Y" }}</small>
+                        <br><small class="text-muted">Покупатель: <strong>{{ item.order.user.get_username }}</strong></small>
+                    </td>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.total }} ₽</td>
+                    <td>
+                        <span class="badge bg-{{ item.order.status|status_class }}">
+                            {{ item.order.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url 'vendors:order_update' pk=item.pk %}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil"></i> Статус
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page=1">&laquo; Первая</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Пред.</a></li>
+        {% endif %}
+        <li class="page-item disabled"><span class="page-link">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">След.</a></li>
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Последняя &raquo;</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% else %}
+<div class="alert alert-info">Заказов пока нет.</div>
+{% endif %}
+{% endblock %}

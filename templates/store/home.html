@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная — Маркетплейс{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="bg-primary text-white rounded-3 p-5 mb-5 text-center">
+    <h1 class="display-5 fw-bold">Добро пожаловать на Морковку</h1>
+    <p class="lead">Тысячи товаров от лучших продавцов</p>
+    <a href="#products" class="btn btn-light btn-lg mt-2">Смотреть товары</a>
+</div>
+
+<!-- Categories -->
+<div class="mb-5">
+    <h2 class="mb-4"><i class="bi bi-grid"></i> Категории</h2>
+    <div class="row g-3">
+        {% for category in categories %}
+        <div class="col-6 col-md-4 col-lg-3">
+            <a href="{{ category.get_absolute_url }}" class="text-decoration-none">
+                <div class="card h-100 text-center shadow-sm hover-shadow">
+                    <div class="card-body">
+                        <i class="bi bi-tag fs-1 text-primary"></i>
+                        <h6 class="card-title mt-2">{{ category.name }}</h6>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-muted">Категории пока не добавлены.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Featured Products -->
+<div class="mb-5" id="products">
+    <h2 class="mb-4"><i class="bi bi-star"></i> Рекомендуемые товары</h2>
+    <div class="row g-4">
+        {% for product in featured_products %}
+        <div class="col-6 col-md-3">
+            <div class="card product-card h-100 shadow-sm">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}"
+                     style="height:180px;object-fit:cover;">
+                {% else %}
+                <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center"
+                     style="height:180px;color:white;font-size:3rem;">
+                    <i class="bi bi-image"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h6 class="card-title text-truncate">{{ product.name }}</h6>
+                    <p class="text-muted small">{{ product.vendor.name }}</p>
+                    <p class="fw-bold text-primary fs-5">{{ product.price }} ₽</p>
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                    <a href="{{ product.get_absolute_url }}" class="btn btn-outline-primary btn-sm w-100">
+                        Подробнее
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-muted">Товары пока не добавлены.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Latest Products -->
+<div>
+    <h2 class="mb-4"><i class="bi bi-clock"></i> Последние товары</h2>
+    <div class="row g-4">
+        {% for product in latest_products %}
+        <div class="col-6 col-md-3">
+            <div class="card product-card h-100 shadow-sm">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}"
+                     style="height:180px;object-fit:cover;">
+                {% else %}
+                <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center"
+                     style="height:180px;color:white;font-size:3rem;">
+                    <i class="bi bi-image"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h6 class="card-title text-truncate">{{ product.name }}</h6>
+                    <p class="text-muted small">{{ product.vendor.name }}</p>
+                    <p class="fw-bold text-primary fs-5">{{ product.price }} ₽</p>
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                    <a href="{{ product.get_absolute_url }}" class="btn btn-outline-primary btn-sm w-100">
+                        Подробнее
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

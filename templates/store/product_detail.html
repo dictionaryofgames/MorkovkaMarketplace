@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} — Маркетплейс{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'store:home' %}">Главная</a></li>
+        {% if product.category %}
+        <li class="breadcrumb-item"><a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a></li>
+        {% endif %}
+        <li class="breadcrumb-item active">{{ product.name }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <!-- Product Image -->
+    <div class="col-md-6 mb-4">
+        {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="img-fluid rounded shadow w-100"
+             style="max-height:500px;object-fit:cover;">
+        {% else %}
+        <div class="bg-secondary d-flex align-items-center justify-content-center rounded shadow w-100"
+             style="height:400px;color:white;font-size:5rem;">
+            <i class="bi bi-image"></i>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Product Info -->
+    <div class="col-md-6">
+        <h1 class="mb-2">{{ product.name }}</h1>
+        <p class="text-muted mb-1">
+            <a href="{{ product.vendor.get_absolute_url }}" class="text-decoration-none">
+                <i class="bi bi-shop"></i> {{ product.vendor.name }}
+            </a>
+        </p>
+        <div class="mb-3">
+            <span class="badge bg-primary fs-6">{{ product.category.name|default:'Без категории' }}</span>
+        </div>
+
+        <hr>
+
+        <div class="mb-4">
+            <h2 class="text-primary fw-bold">{{ product.price }} ₽</h2>
+        </div>
+
+        <div class="mb-3">
+            {% if product.is_in_stock %}
+            <span class="badge bg-success fs-6">В наличии: {{ product.stock }} шт.</span>
+            {% else %}
+            <span class="badge bg-danger fs-6">Нет в наличии</span>
+            {% endif %}
+        </div>
+
+        {% if user.is_authenticated and product.is_in_stock %}
+        <form method="post" action="{% url 'cart:add' product_id=product.pk %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary btn-lg me-2">
+                <i class="bi bi-cart-plus"></i> В корзину
+            </button>
+        </form>
+        {% endif %}
+
+        <hr>
+
+        <h5>Описание</h5>
+        <p class="text-muted">{{ product.description|linebreaks|default:'Описание отсутствует' }}</p>
+    </div>
+</div>
+
+<!-- Related Products -->
+{% if related_products %}
+<div class="mt-5">
+    <h3 class="mb-4">Похожие товары</h3>
+    <div class="row g-4">
+        {% for p in related_products %}
+        <div class="col-6 col-md-3">
+            <div class="card product-card h-100 shadow-sm">
+                {% if p.image %}
+                <img src="{{ p.image.url }}" class="card-img-top" alt="{{ p.name }}"
+                     style="height:150px;object-fit:cover;">
+                {% else %}
+                <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center"
+                     style="height:150px;color:white;font-size:2rem;">
+                    <i class="bi bi-image"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h6 class="card-title text-truncate">{{ p.name }}</h6>
+                    <p class="fw-bold text-primary">{{ p.price }} ₽</p>
+                </div>
+                <div class="card-footer bg-white border-top-0">
+                    <a href="{{ p.get_absolute_url }}" class="btn btn-outline-primary btn-sm w-100">Подробнее</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ category.name }} — Маркетплейс{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'store:home' %}">Главная</a></li>
+        <li class="breadcrumb-item active">{{ category.name }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <!-- Filters Sidebar -->
+    <div class="col-lg-3 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title mb-3"><i class="bi bi-funnel"></i> Фильтры</h5>
+
+                <form method="GET" action="{{ category.get_absolute_url }}">
+                    <div class="mb-3">
+                        <label class="form-label">Цена от (₽)</label>
+                        <input type="number" name="min_price" class="form-control form-control-sm"
+                               value="{{ min_price }}" min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Цена до (₽)</label>
+                        <input type="number" name="max_price" class="form-control form-control-sm"
+                               value="{{ max_price }}" min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Продавец</label>
+                        <select name="vendor" class="form-select form-select-sm">
+                            <option value="">Все продавцы</option>
+                            {% for v in vendors %}
+                            <option value="{{ v.pk }}" {% if request.GET.vendor == v.pk|stringformat:"d" %}selected{% endif %}>{{ v.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm w-100">Применить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products -->
+    <div class="col-lg-9">
+        <h2 class="mb-4">{{ category.name }}</h2>
+        <p class="text-muted">{{ products.count }} товаров</p>
+
+        {% if products %}
+        <div class="row g-4">
+            {% for product in products %}
+            <div class="col-6 col-md-4">
+                <div class="card product-card h-100 shadow-sm">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}"
+                         style="height:180px;object-fit:cover;">
+                    {% else %}
+                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center"
+                         style="height:180px;color:white;font-size:3rem;">
+                        <i class="bi bi-image"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h6 class="card-title text-truncate">{{ product.name }}</h6>
+                        <p class="text-muted small">{{ product.vendor.name }}</p>
+                        <p class="fw-bold text-primary fs-5">{{ product.price }} ₽</p>
+                        {% if product.is_in_stock %}
+                        <span class="badge bg-success">В наличии</span>
+                        {% else %}
+                        <span class="badge bg-danger">Нет в наличии</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-white border-top-0">
+                        <a href="{{ product.get_absolute_url }}" class="btn btn-outline-primary btn-sm w-100">
+                            Подробнее
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">Товары не найдены.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

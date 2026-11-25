@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load vendors_tags %}
+
+{% block title %}Кабинет продавца — Маркетплейс{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-briefcase"></i> Кабинет продавца</h2>
+
+<!-- Stats -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-box fs-1 text-primary"></i>
+                <h3 class="mt-2">{{ total_products }}</h3>
+                <p class="text-muted mb-0">Товаров</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-receipt fs-1 text-success"></i>
+                <h3 class="mt-2">{{ total_orders }}</h3>
+                <p class="text-muted mb-0">Заказов</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-cash-stack fs-1 text-warning"></i>
+                <h3 class="mt-2">{{ total_revenue }} ₽</h3>
+                <p class="text-muted mb-0">Выручка</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center shadow-sm">
+            <div class="card-body">
+                <i class="bi bi-shop fs-1 text-info"></i>
+                <h3 class="mt-2">{{ vendor.name }}</h3>
+                <p class="text-muted mb-0">Статус: <span class="badge bg-{{ vendor.status|status_class }}">{{ vendor.get_status_display }}</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <a href="{% url 'vendors:product_list' %}" class="btn btn-outline-primary w-100 btn-lg">
+            <i class="bi bi-box"></i> Мои товары
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="{% url 'vendors:product_create' %}" class="btn btn-success w-100 btn-lg">
+            <i class="bi bi-plus-circle"></i> Добавить товар
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a href="{% url 'vendors:order_list' %}" class="btn btn-outline-secondary w-100 btn-lg">
+            <i class="bi bi-receipt"></i> Заказы
+        </a>
+    </div>
+</div>
+
+<!-- Recent Orders -->
+<h4 class="mb-3">Последние заказы</h4>
+{% if recent_orders %}
+<div class="card shadow-sm">
+    <div class="list-group list-group-flush">
+        {% for item in recent_orders %}
+        <div class="list-group-item d-flex justify-content-between">
+            <div>
+                <a href="{{ item.product.get_absolute_url }}" class="text-decoration-none">{{ item.product.name }}</a>
+                <br>
+                <small class="text-muted">Заказ #{{ item.order.id }} — {{ item.order.created_at|date:"d.m.Y" }}</small>
+            </div>
+            <div class="text-end">
+                <strong>{{ item.quantity }} x {{ item.price }} ₽</strong>
+                <br>
+                <span class="badge bg-{{ item.order.status|status_class }}">
+                    {{ item.order.get_status_display }}
+                </span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<p class="text-muted">Заказов пока нет.</p>
+{% endif %}
+{% endblock %}

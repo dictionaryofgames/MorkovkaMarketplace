@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load vendors_tags %}
+
+{% block title %}Мои заказы — Морковка{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-receipt"></i> Мои заказы</h2>
+
+{% if orders %}
+<div class="card shadow-sm">
+    <div class="list-group list-group-flush">
+        {% for order in orders %}
+        <a href="{% url 'orders:order_detail' pk=order.pk %}" class="list-group-item list-group-item-action">
+            <div class="d-flex w-100 justify-content-between align-items-center">
+                <div>
+                    <h6 class="mb-1">Заказ #{{ order.id }}</h6>
+                    <small class="text-muted">Покупатель: {{ order.user.get_username }}</small>
+                    <br><small class="text-muted">{{ order.created_at|date:"d.m.Y H:i" }}</small>
+                    <p class="mb-0 small">{{ order.items.count }} {{ "товар|товара|товаров"|yesno:"шт,шт,шт" }}</p>
+                </div>
+                <div class="text-end">
+                    <span class="badge bg-{{ order.status|status_class }}">
+                        {{ order.get_status_display }}
+                    </span>
+                    <p class="fw-bold mb-0 mt-1">{{ order.total_price }} ₽</p>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">
+    <i class="bi bi-info-circle"></i> У вас пока нет заказов.
+    <a href="{% url 'store:home' %}" class="alert-link">Перейти к покупкам</a>
+</div>
+{% endif %}
+{% endblock %}

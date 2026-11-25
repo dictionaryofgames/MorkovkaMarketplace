@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль — {{ user.get_username }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-4">
+                    {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" alt="Аватар" class="rounded-circle me-3" style="width:80px;height:80px;object-fit:cover;">
+                    {% else %}
+                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3" style="width:80px;height:80px;font-size:2rem;">
+                        {{ user.get_username|first|upper }}
+                    </div>
+                    {% endif %}
+                    <div>
+                        <h3 class="mb-0">{{ user.get_username }}</h3>
+                        <p class="text-muted mb-0">{{ user.get_role_display }}</p>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <strong>Email:</strong> {{ user.email }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <strong>Телефон:</strong> {{ user.phone|default:'—' }}
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <strong>Адрес:</strong> {{ user.address|default:'—' }}
+                    </div>
+                </div>
+
+                {% if user.is_seller and vendor and vendor.slug %}
+                <hr>
+                <h5>Мой магазин</h5>
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <form method="post" action="{% url 'users:profile' pk=user.pk %}">
+                            {% csrf_token %}
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <label for="vendor_name" class="form-label small text-muted">Название магазина</label>
+                                    <input type="text" name="vendor_name" id="vendor_name"
+                                           class="form-control form-control-lg"
+                                           value="{{ vendor.name }}" required>
+                                </div>
+                                <div class="col-md-4 mt-4">
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="bi bi-check-circle"></i> Сохранить
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        <hr>
+                        <p class="card-text">{{ vendor.description|default:'Описание отсутствует' }}</p>
+                        <a href="{% url 'store:vendor_detail' slug=vendor.slug %}" class="btn btn-outline-primary btn-sm">
+                            Перейти в магазин
+                        </a>
+                    </div>
+                </div>
+                {% elif user.is_seller and vendor and not vendor.slug %}
+                <hr>
+                <div class="alert alert-warning">
+                    У магазина не указан адрес. <a href="{% url 'users:create_vendor' %}">Обновить данные магазина</a>
+                </div>
+                {% elif user.is_seller and not vendor %}
+                <div class="alert alert-info">
+                    Вы продавец, но у вас ещё нет магазина.
+                    <a href="{% url 'users:create_vendor' %}">Создать магазин</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
